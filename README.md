@@ -32,4 +32,4 @@ https://github.com/seujung/KoBART-summarization
 
 기존의 Transformer의 입력 문서의 단어 길이가 512로 제한되어 있던 문제를 해결하고 시간복잡도까지 개선한 모델인 Longformer가 나왔습니다. Longformer에서는 Self-Attention이 아닌 총 세가지의 Attention 기법을 제안하여 복잡도와 메모리 문제를 개선했습니다.  https://github.com/allenai/longformer
 
-(BERT 내부에서 512,1048,.. 정도 수정이 가능하긴 함..)1
+(BERT 내부에서 512,1048,.. 정도 수정이 가능하긴 함..)
