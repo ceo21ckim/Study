@@ -1,10 +1,14 @@
-import tqdm, os
-
+import tqdm, os, glob, shutil
 import requests, json
 import pandas as pd
 
 BASE_DIR = os.path.dirname(__file__)
 ABS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+# image path
+JAYWALK_IMG_PATH = os.path.join(BASE_DIR, 'origin_data', 'images', 'jaywalks')
+OTHER_IMG_PATH = os.path.join(BASE_DIR, 'origin_data', 'images', 'others')
 
 
 # bboxes path
@@ -16,6 +20,7 @@ JAY_BBOX_TEST_PATH = os.path.join(os.path.split(JAYWALK_BBOX_PATH)[0], 'test', '
 
 OHR_BBOX_TRAIN_PATH = os.path.join(os.path.split(OTHER_BBOX_PATH)[0], 'train', 'others')
 OHR_BBOX_TEST_PATH = os.path.join(os.path.split(OTHER_BBOX_PATH)[0], 'test', 'others')
+
 
 
 
@@ -51,6 +56,14 @@ for key in kor_to_eng.keys(): eng_to_kor[kor_to_eng[key]] = key
 
 
 label_to_idx = dict([(label, idx) for idx, label in enumerate(detection_labels)])
+
+def make_dir():
+    if not os.path.exists(JAYWALK_BBOX_PATH):
+        os.makedirs(JAYWALK_BBOX_PATH)
+    
+    if not os.path.exists(OTHER_BBOX_PATH):
+        os.makedirs(OTHER_BBOX_PATH)
+
 
 
 def save_bboxes(URL = 'http://apis.data.go.kr/C100006/zerocity/getCctvList/event/2DBoundingBox'):
@@ -104,6 +117,46 @@ def save_bboxes(URL = 'http://apis.data.go.kr/C100006/zerocity/getCctvList/event
 
     print('complete!')
 
+jaywalk_list = glob.glob(os.path.join(JAYWALK_BBOX_PATH, '*.txt'))
+other_list = glob.glob(os.path.join(OTHER_BBOX_PATH, '*.txt'))
+
+
+def dataset_split(jaywalk_list=jaywalk_list, other_list=other_list):
+
+    jaywalk_train = jaywalk_list[:1400]
+    jaywalk_test = jaywalk_list[1400:]
+
+    other_train = other_list[:1648]
+    other_test = other_list[1648:]
+
+    if not os.path.exists(JAY_BBOX_TRAIN_PATH):
+        os.makedirs(JAY_BBOX_TRAIN_PATH)
+
+    if not os.path.exists(JAY_BBOX_TEST_PATH):
+        os.makedirs(JAY_BBOX_TEST_PATH)
+
+    if not os.path.exists(OHR_BBOX_TRAIN_PATH):
+        os.makedirs(OHR_BBOX_TRAIN_PATH)
+
+    if not os.path.exists(OHR_BBOX_TEST_PATH):
+        os.makedirs(OHR_BBOX_TEST_PATH)
+
+    for j_train_path in jaywalk_train:
+        shutil.copy(j_train_path, JAY_BBOX_TRAIN_PATH)
+
+    for j_test_path in jaywalk_test:
+        shutil.copy(j_test_path, JAY_BBOX_TEST_PATH)
+
+    for o_train_path in other_train:
+        shutil.copy(o_train_path, OHR_BBOX_TRAIN_PATH)
+
+    for o_test_path in other_test:
+        shutil.copy(o_test_path, OHR_BBOX_TEST_PATH)
+    
+    return print('complete to make train_test_datasets!')
+
 
 if __name__ == '__main__':
     save_bboxes()
+
+    dataset_split()
