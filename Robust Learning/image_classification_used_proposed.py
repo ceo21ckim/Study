@@ -12,8 +12,10 @@ from torchvision import transforms, models
 
 import matplotlib.pyplot as plt 
 
-BASE_DIR = os.path.dirname(__file__)
-DATA_PATH = os.path.join(BASE_DIR, 'origin_data', 'images')
+#BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.getcwd()
+
+DATA_PATH = os.path.join(BASE_DIR, 'preprocessed_data')
 
 
 JAY_TRAIN_PATH = os.path.join(DATA_PATH, 'train', 'jaywalks')
@@ -25,7 +27,7 @@ OHR_TEST_PATH = os.path.join(os.path.split(DATA_PATH)[0], 'test', 'others')
 
 parser = argparse.ArgumentParser(description='ml_final_assignment')
 
-parser.add_argument('--batch_size', type=int, default=64)
+parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--input_size', type=tuple, default=(224, 224))
 parser.add_argument('--learning_rate', '-lr', type=float, default=1e-3)
 parser.add_argument('--num_epochs', type=int, default=30)
@@ -180,6 +182,7 @@ def evaluate(model, dataloader, criterion):
 
 
 
+
 if __name__ == '__main__':
     train_epoch_losses, train_epoch_acces = [], []
     test_epoch_losses, test_epoch_acces = [], []
@@ -189,7 +192,7 @@ if __name__ == '__main__':
         train_batch_losses, train_batch_acces = train(model, train_dataloader, criterion, optimizer)
         test_batch_losses, test_batch_acces = evaluate(model, val_dataloader, criterion)
         if min_loss > test_batch_losses:
-            torch.save(model.state_dict(), 'original_model.pt')
+            torch.save(model.state_dict(), 'means_data_model.pt') ##########################
             min_loss = test_batch_losses
 
         train_epoch_losses.append(train_batch_losses)
@@ -201,21 +204,26 @@ if __name__ == '__main__':
 
         results = pd.DataFrame([train_epoch_losses, train_epoch_acces, test_epoch_losses, test_epoch_acces]).T
         results.columns =['train_loss', 'train_acc', 'test_loss', 'test_acc']
-        results.to_csv('results_used_original_data.csv')
+        results.to_csv('results_used_means_data.csv') ##################################
+
+
 
 fig, axes = plt.subplots(nrows = 2, figsize = (16, 9))
-axes[0].plot(np.arange(1, 31), train_epoch_losses, label='train_loss')
-axes[0].plot(np.arange(1, 31), test_epoch_losses, label='test_loss')
-axes[0].set_xticks(np.arange(1, 31))
+axes[0].plot(np.arange(1, args.epochs + 1), train_epoch_losses, label='train_loss')
+axes[0].plot(np.arange(1, args.epochs + 1), test_epoch_losses, label='test_loss')
+axes[0].set_xticks(np.arange(1, args.epoch + 1))
 axes[0].legend()
 
 
-axes[1].plot(np.arange(1, 31), train_epoch_acces, label='train_accuracy')
-axes[1].plot(np.arange(1, 31), test_epoch_acces, label='test_accuracy')
-axes[1].set_xticks(np.arange(1, 31))
+axes[1].plot(np.arange(1, args.epochs + 1), train_epoch_acces, label='train_accuracy')
+axes[1].plot(np.arange(1, args.epochs + 1), test_epoch_acces, label='test_accuracy')
+axes[1].set_xticks(np.arange(1, args.epochs + 1))
 axes[1].legend()
 
 
 axes[0].set_xlabel('EPOCHS')
 axes[1].set_xlabel('EPOCHS')
 plt.show()
+
+
+results = pd.DataFrame([train_epoch_losses, train_epoch_acces, test_epoch_losses, test_epoch_acces], index = ['train_loss', 'train_acc', 'test_loss', 'test_acc']).T

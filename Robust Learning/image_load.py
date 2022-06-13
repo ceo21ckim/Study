@@ -21,14 +21,6 @@ OHR_IMG_TEST_PATH = os.path.join(os.path.split(OTHER_IMG_PATH)[0], 'test', 'othe
 
 
 
-parser = argparse.ArgumentParser(description='ml_final_assianment')
-
-parser.add_argument('--img_size', type=int, default=1500)
-
-args = parser.parse_args()
-
-
-
 def save_image(URL = 'http://apis.data.go.kr/C100006/zerocity/getCctvList/event/2DBoundingBox'):
     i = 1
     detect_df = pd.DataFrame()
@@ -67,11 +59,16 @@ def save_image(URL = 'http://apis.data.go.kr/C100006/zerocity/getCctvList/event/
     print('complete!')
 
 
-jaywalk_list = glob.glob(os.path.join(JAYWALK_IMG_PATH, '*.jpg'))[:args.img_size]
-other_list = glob.glob(os.path.join(OTHER_IMG_PATH, '*.jpg'))[:args.img_size]
+jaywalk_list = glob.glob(os.path.join(JAYWALK_IMG_PATH, '*.jpg'))
+other_list = glob.glob(os.path.join(OTHER_IMG_PATH, '*.jpg'))
 
 def dataset_split(jaywalk_list=jaywalk_list, other_list=other_list):
-    jaywalk_train, jaywalk_test, other_train, other_test = train_test_split(jaywalk_list, other_list, test_size = 0.3, random_state=42)
+
+    jaywalk_train = jaywalk_list[:1400]
+    jaywalk_test = jaywalk_list[1400:]
+
+    other_train = other_list[:1648]
+    other_test = other_list[1648:]
 
     if not os.path.exists(JAY_IMG_TRAIN_PATH):
         os.makedirs(JAY_IMG_TRAIN_PATH)
