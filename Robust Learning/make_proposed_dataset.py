@@ -48,14 +48,14 @@ for train in tqdm.tqdm(train_bbox_list, desc = 'preprocessing...'):
         gmm = GaussianMixture(n_components=2, random_state=2)
         _ = gmm.fit(target)
 
-    if np.abs((gmm.means_[0] - gmm.means_[1]).sum()) < 0.5 :
-        train_i += 1
-        _ = shutil.copy(train_img_path, os.path.join(SAVE_TRAIN_PATH, file_name))
-
-
-#    if np.abs(gmm.weights_[0] - gmm.weights_[1]) < 0.7 :
+#    if np.abs((gmm.means_[0] - gmm.means_[1]).sum()) < 0.5 :
 #        train_i += 1
 #        _ = shutil.copy(train_img_path, os.path.join(SAVE_TRAIN_PATH, file_name))
+
+
+    if np.abs(gmm.weights_[0] - gmm.weights_[1]) < 0.7 :
+        train_i += 1
+        _ = shutil.copy(train_img_path, os.path.join(SAVE_TRAIN_PATH, file_name))
 
     else: 
         pass 
@@ -79,19 +79,18 @@ for test in tqdm.tqdm(test_bbox_list, desc = 'preprocessing...'):
         _ = gmm.fit(target)
 
 
-    if np.abs((gmm.means_[0] - gmm.means_[1]).sum()) < 0.5 :
-        test_i += 1
-        _ = shutil.copy(train_img_path, os.path.join(SAVE_TEST_PATH, file_name))
-
-
-#    if np.abs(gmm.weights_[0] - gmm.weights_[1]) < 0.7 :
+#    if np.abs((gmm.means_[0] - gmm.means_[1]).sum()) < 0.5 :
 #        test_i += 1
-#        _ = shutil.copy(test_img_path, os.path.join(SAVE_TEST_PATH, file_name))
+#        _ = shutil.copy(train_img_path, os.path.join(SAVE_TEST_PATH, file_name))
+
+
+    if np.abs(gmm.weights_[0] - gmm.weights_[1]) < 0.7 :
+        test_i += 1
+        _ = shutil.copy(test_img_path, os.path.join(SAVE_TEST_PATH, file_name))
 
     else: 
         pass 
 
 print(train_i, test_i )
-# means_ (0.7) -> 1232, 599
-# means_ (1.0) -> 1383 599
-# means_ (0.5) -> 1119 532
+
+# weight_ (0.5) -> 1119 532
