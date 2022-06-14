@@ -35,6 +35,9 @@ def preprocessing(target_p):
 
 # training
 train_i = 0
+
+_weight = 0.7
+
 for train in tqdm.tqdm(train_bbox_list, desc = 'preprocessing...'):
     train_img_path = train.replace('bboxes', 'images').replace('txt', 'jpg')
     file_name = os.path.split(train_img_path)[-1]
@@ -48,12 +51,8 @@ for train in tqdm.tqdm(train_bbox_list, desc = 'preprocessing...'):
         gmm = GaussianMixture(n_components=2, random_state=2)
         _ = gmm.fit(target)
 
-#    if np.abs((gmm.means_[0] - gmm.means_[1]).sum()) < 0.5 :
-#        train_i += 1
-#        _ = shutil.copy(train_img_path, os.path.join(SAVE_TRAIN_PATH, file_name))
 
-
-    if np.abs(gmm.weights_[0] - gmm.weights_[1]) < 0.7 :
+    if np.abs(gmm.weights_[0] - gmm.weights_[1]) < _weight :
         train_i += 1
         _ = shutil.copy(train_img_path, os.path.join(SAVE_TRAIN_PATH, file_name))
 
@@ -66,6 +65,7 @@ for train in tqdm.tqdm(train_bbox_list, desc = 'preprocessing...'):
 
 # testing
 test_i = 0 
+
 for test in tqdm.tqdm(test_bbox_list, desc = 'preprocessing...'):
     test_img_path = test.replace('bboxes', 'images').replace('txt', 'jpg')
     file_name = os.path.split(test_img_path)[-1]
@@ -79,12 +79,7 @@ for test in tqdm.tqdm(test_bbox_list, desc = 'preprocessing...'):
         _ = gmm.fit(target)
 
 
-#    if np.abs((gmm.means_[0] - gmm.means_[1]).sum()) < 0.5 :
-#        test_i += 1
-#        _ = shutil.copy(train_img_path, os.path.join(SAVE_TEST_PATH, file_name))
-
-
-    if np.abs(gmm.weights_[0] - gmm.weights_[1]) < 0.7 :
+    if np.abs(gmm.weights_[0] - gmm.weights_[1]) < _weight :
         test_i += 1
         _ = shutil.copy(test_img_path, os.path.join(SAVE_TEST_PATH, file_name))
 
@@ -92,5 +87,6 @@ for test in tqdm.tqdm(test_bbox_list, desc = 'preprocessing...'):
         pass 
 
 print(train_i, test_i )
-
-# weight_ (0.5) -> 1119 532
+# weight_ (0.7) -> 1309, 486
+# weight_ (0.6) -> 945, 393
+# weight_ (0.5) -> 690, 340
